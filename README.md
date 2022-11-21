@@ -1,5 +1,5 @@
 # Taller 3 
- ## Arboles rojinegroes
+ ## Arboles rojinegros
 
 ## Recursos
 
