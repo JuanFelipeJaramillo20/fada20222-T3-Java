@@ -76,10 +76,10 @@ class ArbolRojiNegroTest {
     @Test
     void searchTest() throws Exception {
 
-        assertEquals(arb1.search(5).getValor(), 1);
+        assertEquals(arb1.search(5).getValor(), 5);
         assertEquals(arb2.search(6).getValor(), 6);
-        assertEquals(arb3.search(3).getValor(), 1);
-        assertEquals(arb4.search(9).getValor(), 1);
+        assertEquals(arb3.search(3).getValor(), 3);
+        assertEquals(arb4.search(9).getValor(), 9);
 
         assertNull(arb1.search(30));
         assertNull(arb2.search(-3));
