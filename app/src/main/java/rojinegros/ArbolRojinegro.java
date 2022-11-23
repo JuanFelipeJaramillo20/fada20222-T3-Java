@@ -79,7 +79,14 @@ public class ArbolRojinegro {
         }
         nuevoNodo.setPadre(padre);
 
+
+        this.black = nuevoNodo.isBlack();
+        this.valor = nuevoNodo.getValor();
+        this.der = nuevoNodo.getDer();
+        this.izq = nuevoNodo.getIzq();
+        this.padre = nuevoNodo.getPadre();
         arreglarInsercion(nuevoNodo);
+        
     }
 
     public void arreglarInsercion(ArbolRojinegro nodo) throws Exception {
@@ -208,18 +215,19 @@ public class ArbolRojinegro {
     }
 
     public ArbolRojinegro search(int x) throws Exception {
-        if (this.getValor() == x) {
-            return this;
+        ArbolRojinegro raiz = this.raiz;
+        if (raiz.getValor() == x) {
+            return raiz;
         } else {
-            if (x >= this.getValor()) {
-                if (this.getDer() != null) {
-                    return this.getDer().search(x);
+            if (x >= raiz.getValor()) {
+                if (raiz.getDer() != null) {
+                    return raiz.getDer().search(x);
                 } else {
                     return null;
                 }
             } else {
-                if (this.getIzq() != null) {
-                    return this.getIzq().search(x);
+                if (raiz.getIzq() != null) {
+                    return raiz.getIzq().search(x);
                 } else {
                     return null;
                 }
@@ -274,7 +282,7 @@ public class ArbolRojinegro {
         }
 
         if (newChild != null) {
-            newChild.setPadre(newChild);
+            newChild.setPadre(null);
         }
     }
 
