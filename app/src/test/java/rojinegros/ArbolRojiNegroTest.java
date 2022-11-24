@@ -22,6 +22,7 @@ class ArbolRojiNegroTest {
         arb3 = gen.ejemplo3();
         arb4 = gen.ejemplo4();
     }
+
     @Test
     void recorridoTest() throws Exception {
         assertEquals(arb1.bfs(), "2 1 4 3 5");
@@ -36,7 +37,7 @@ class ArbolRojiNegroTest {
 
     @Test
     void insertarTest() throws Exception {
-        int num[] = {8, 7, 6, 12, 10, 9, 11, 14, 15, 13};
+        int num[] = { 8, 7, 6, 12, 10, 9, 11, 14, 15, 13 };
         ArbolRojinegro instancia = new ArbolRojinegro();
 
         for (int i = 0; i < num.length; i++) {
@@ -45,7 +46,7 @@ class ArbolRojiNegroTest {
         assertEquals(instancia.bfs(), "10 7 12 6 8 11 14 9 13 15");
         assertEquals(instancia.inorden(), "6 7 8 9 10 11 12 13 14 15");
 
-        int numB[] = {20, 22, 1, 2, 3, 9, 14, 17, 0, 33, 7, 13, 19};
+        int numB[] = { 20, 22, 1, 2, 3, 9, 14, 17, 0, 33, 7, 13, 19 };
         ArbolRojinegro instanciaB = new ArbolRojinegro();
 
         for (int i = 0; i < numB.length; i++) {
@@ -90,16 +91,16 @@ class ArbolRojiNegroTest {
     @Test
     void rotacionIzquierdaTest() throws Exception {
 
-        //Execute
+        // Execute
         arb1.rotacionIzquierda(4);
 
-        //Assert
+        // Assert
         assertEquals(arb1.bfs(), "4 2 5 1 3");
 
-        //Execute
+        // Execute
         arb2.rotacionIzquierda(8);
 
-        //Assert
+        // Assert
         assertEquals(arb2.bfs(), "8 5 9 1 6");
 
     }
@@ -107,16 +108,16 @@ class ArbolRojiNegroTest {
     @Test
     void rotacionDerechaTest() throws Exception {
 
-        //Execute
+        // Execute
         arb3.rotacionDerecha(4);
 
-        //Assert
+        // Assert
         assertEquals(arb3.bfs(), "2 1 4 3 5");
 
-        //Execute
+        // Execute
         arb4.rotacionIzquierda(8);
 
-        //Assert
+        // Assert
         assertEquals(arb4.bfs(), "5 1 8 6 9");
     }
 }
