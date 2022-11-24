@@ -82,63 +82,7 @@ public class ArbolRojinegro {
     }
 
     public void arreglarInsercion(ArbolRojinegro nodo) throws Exception {
-        ArbolRojinegro padre = nodo.getPadre();
-
-        if (padre == null) {
-
-            nodo.setBlack(true);
-            return;
-        }
-
-        if (padre.isBlack()) {
-            return;
-        }
-
-        // EL PADRE ES ROJO
-        ArbolRojinegro abuelo = padre.getPadre();
-
-        if (abuelo == null) {
-
-            padre.setBlack(true);
-            return;
-        }
-
-        ArbolRojinegro tio = getUncle(padre);
-
-        if (tio != null && !tio.isBlack()) {
-            padre.setBlack(true);
-            abuelo.setBlack(false);
-            tio.setBlack(true);
-
-            arreglarInsercion(abuelo);
-        }
-
-        else if (padre == abuelo.getIzq()) {
-
-            if (nodo == padre.getDer()) {
-                rotacionIzquierda(padre.getValor());
-                padre = nodo;
-            }
-
-            rotacionDerecha(abuelo.getValor());
-
-            padre.setBlack(true);
-            abuelo.setBlack(false);
-        }
-
-        else {
-
-            if (nodo == padre.getIzq()) {
-                rotacionDerecha(padre.getValor());
-
-                padre = nodo;
-            }
-
-            rotacionIzquierda(abuelo.getValor());
-
-            padre.setBlack(true);
-            abuelo.setBlack(false);
-        }
+        
     }
 
     private ArbolRojinegro getUncle(ArbolRojinegro padre) {
