@@ -51,104 +51,117 @@ public class ArbolRojinegro {
      */
 
     public void insertar(int x) throws Exception {
-        if (this.raiz == null) {
-            this.valor = x;
-            this.black = true;
-            this.raiz = this;
-        } else {
-            ArbolRojinegro nodo = this;
-            ArbolRojinegro padre = null;
-            while (nodo != null) {
-                padre = nodo;
-                if (x < nodo.getValor()) {
-                    nodo = nodo.getIzq();
-                } else {
-                    nodo = nodo.getDer();
-                }
-            }
+        ArbolRojinegro nodo = raiz;
+        ArbolRojinegro padre = null;
 
-            ArbolRojinegro nuevoNodo = new ArbolRojinegro();
-            nuevoNodo.setValor(x);
-            nuevoNodo.setBlack(false);
-            if (x < padre.getValor()) {
-                padre.setIzq(nuevoNodo);
+        while (nodo != null) {
+            padre = nodo;
+            if (x < nodo.getValor()) {
+                nodo = nodo.getIzq();
+            } else if (x > nodo.getValor()) {
+                nodo = nodo.getDer();
             } else {
-                padre.setDer(nuevoNodo);
+                throw new Exception("El arbol ya contiene un nodo con el valor: " + x);
             }
-            nuevoNodo.setPadre(padre);
-            arreglarInsercion(nuevoNodo);
         }
 
+        ArbolRojinegro nuevoNodo = new ArbolRojinegro();
+        nuevoNodo.setValor(x);
+        nuevoNodo.setBlack(false);
+        if (padre == null) {
+            raiz = nuevoNodo;
+        } else if (x < padre.getValor()) {
+            padre.setIzq(nuevoNodo);
+        } else {
+            padre.setDer(nuevoNodo);
+        }
+        nuevoNodo.setPadre(padre);
+
+        ArreglarArbolDespuesDeInsercion(nuevoNodo);
     }
 
-    public void arreglarInsercion(ArbolRojinegro nodo) throws Exception {
+    private void ArreglarArbolDespuesDeInsercion(ArbolRojinegro nodo) throws Exception {
         ArbolRojinegro padre = nodo.getPadre();
 
+        // Caso 1: El padre es nulo, estamos en la raiz
         if (padre == null) {
-
-            nodo.setBlack(true);
+            // Regla 2: La raiz siempre debe ser negra
+            nodo.black = true;
             return;
         }
 
+        // Si el padre es de color negro, no hay que hace nada
         if (padre.isBlack()) {
             return;
         }
 
-        // EL PADRE ES ROJO
+        // Casos cuando el padre es rojo
         ArbolRojinegro abuelo = padre.getPadre();
 
-        if (abuelo == null) {
+        ArbolRojinegro tio = getTio(padre);
 
-            padre.setBlack(true);
-            return;
-        }
-
-        ArbolRojinegro tio = getUncle(padre);
-
+        // Caso 3: Si el tio es rojo, hay que cambiar el color del padre, abuelo y tio
         if (tio != null && !tio.isBlack()) {
             padre.setBlack(true);
             abuelo.setBlack(false);
             tio.setBlack(true);
 
-            arreglarInsercion(abuelo);
+            // Como cambiamos el color del padre, abuelo y tio puede que hayamos cambiado el
+            // color de la raiz, por eso llamamos nuevamente el método con el abuelo para
+            // revisar y corregir si es necesario
+            ArreglarArbolDespuesDeInsercion(abuelo);
         }
 
+        // Si el padre es el hijo izquierdo del abuelo
         else if (padre == abuelo.getIzq()) {
-
+            // Caso 4,1: El tio es negro y el nodo es "hijo interno" izquierdo->derecho del
+            // abuelo
             if (nodo == padre.getDer()) {
                 rotacionIzquierda(padre.getValor());
+                // Ahora "padre" apunta al nuedo nodo raiz del sub-arbol rotado, luego será
+                // recoloreado
                 padre = nodo;
             }
 
+            // Caso 5.1: El tio es negro y el nodo es "hijo externo" izquierdo->izquierdo
+            // del abuelo
             rotacionDerecha(abuelo.getValor());
 
+            // Recoloreamos el padre y el abuelo
             padre.setBlack(true);
             abuelo.setBlack(false);
         }
 
+        // Si el padre es hijo derecho del abuelo
         else {
-
+            // Caso 4,2: El tio es negro y el nodo es "hijo interno" derecho->izquierdo del
+            // abuelo
             if (nodo == padre.getIzq()) {
                 rotacionDerecha(padre.getValor());
 
+                // Ahora "padre" apunta al nuedo nodo raiz del sub-arbol rotado, luego será
+                // recoloreado
                 padre = nodo;
             }
 
+            // Case 5.2: El tio es negro y el nodo es "hijo externo" derecho->dercho del
+            // abuelo
             rotacionIzquierda(abuelo.getValor());
 
+            // Recoloreamos el padre y el abuelo
             padre.setBlack(true);
             abuelo.setBlack(false);
         }
     }
 
-    private ArbolRojinegro getUncle(ArbolRojinegro padre) {
-        ArbolRojinegro abuelo = padre.getPadre();
-        if (abuelo.getIzq() == padre) {
+    private ArbolRojinegro getTio(ArbolRojinegro nodoPadre) throws Exception {
+        ArbolRojinegro abuelo = nodoPadre.getPadre();
+        if (abuelo.getIzq() == nodoPadre) {
             return abuelo.getDer();
-        } else if (abuelo.getDer() == padre) {
+        } else if (abuelo.getDer() == nodoPadre) {
             return abuelo.getIzq();
         } else {
-            throw new IllegalStateException("Parent is not a child of its grandparent");
+            throw new Exception("El padre no es hijo del abuelo");
         }
     }
 
@@ -177,81 +190,74 @@ public class ArbolRojinegro {
     }
 
     public ArbolRojinegro search(int x) throws Exception {
-
-        if (this.getValor() == x) {
-            return raiz;
-        } else {
-            if (x >= this.getValor()) {
-                if (this.getDer() != null) {
-                    return this.getDer().search(x);
+        ArbolRojinegro iterador = this.raiz;
+        while (iterador != null) {
+            if (iterador.getValor() == x) {
+                return iterador;
+            } else if (iterador.getValor() < x) {
+                if (iterador.getDer() != null) {
+                    iterador = iterador.getDer();
                 } else {
                     return null;
                 }
             } else {
-                if (this.getIzq() != null) {
-                    return this.getIzq().search(x);
+                if (iterador.getIzq() != null) {
+                    iterador = iterador.getIzq();
                 } else {
                     return null;
                 }
             }
         }
+        return null;
     }
 
     public void rotacionIzquierda(int x) throws Exception {
-        ArbolRojinegro arb = this.search(x);
-        ArbolRojinegro y = arb.getDer();
-        arb.setDer(y.getIzq());
-        if (y.getIzq() != null) {
-            y.getIzq().setPadre(arb);
+        ArbolRojinegro node = search(x);
+        ArbolRojinegro parent = node.padre;
+        ArbolRojinegro rightChild = node.der;
+
+        node.der = rightChild.izq;
+        if (rightChild.izq != null) {
+            rightChild.izq.padre = node;
         }
-        y.setPadre(arb.getPadre());
-        if (arb.getPadre() == null) {
-            this.setRaiz(y);
-        } else if (arb == arb.getPadre().getIzq()) {
-            arb.getPadre().setIzq(y);
-        } else {
-            arb.getPadre().setDer(y);
-        }
-        y.setIzq(arb);
-        arb.setPadre(y);
+
+        rightChild.izq = node;
+        node.padre = rightChild;
+
+        replaceParentsChild(parent, node, rightChild);
+
     }
 
     public void rotacionDerecha(int x) throws Exception {
-        ArbolRojinegro nodo = this.search(x);
-        ArbolRojinegro parent = nodo.getPadre();
-        ArbolRojinegro leftChild = nodo.getIzq();
+        ArbolRojinegro node = search(x);
+        ArbolRojinegro parent = node.padre;
+        ArbolRojinegro leftChild = node.izq;
 
-        nodo.setIzq(leftChild.getDer());
-        if (leftChild.getDer() != null) {
-            leftChild.getDer().setPadre(nodo);
+        node.izq = leftChild.der;
+        if (leftChild.der != null) {
+            leftChild.der.padre = node;
         }
 
-        leftChild.setDer(nodo);
-        nodo.setPadre(leftChild);
-        // cambia la raiz
-        replaceParentsChild(parent, nodo, leftChild);
+        leftChild.der = node;
+        node.padre = leftChild;
+
+        replaceParentsChild(parent, node, leftChild);
+
     }
 
     private void replaceParentsChild(ArbolRojinegro parent, ArbolRojinegro oldChild, ArbolRojinegro newChild) {
         if (parent == null) {
-            // this.raiz = newChild;
-            // ArbolRojinegro raizAntigua = this;
-            this.setBlack(newChild.isBlack());
-            this.valor = newChild.getValor();
-            this.der = newChild.getDer();
-            this.izq = newChild.getIzq();
-
-            // el this debe modificarse tambien ya que el this siempre es la raiz
-        } else if (parent.getIzq() == oldChild) {
-            parent.setIzq(newChild);
-        } else if (parent.getDer() == oldChild) {
-            parent.setDer(newChild);
+            raiz = newChild;
+        } else if (parent.izq == oldChild) {
+            parent.izq = newChild;
+        } else if (parent.der == oldChild) {
+            parent.der = newChild;
         } else {
             throw new IllegalStateException("Node is not a child of its parent");
         }
 
         if (newChild != null) {
-            newChild.setPadre(parent);
+            newChild.padre = parent;
         }
     }
 
@@ -266,7 +272,7 @@ public class ArbolRojinegro {
         String salida = "";
         String separador = "";
         Queue<ArbolRojinegro> cola = new LinkedList<>();
-        cola.add(this);
+        cola.add(this.raiz);
         while (cola.size() > 0) {
             ArbolRojinegro nodo = cola.poll();
             salida += separador + String.valueOf(nodo.getValor());
