@@ -25,7 +25,7 @@ public class ArbolRojinegro {
 
     @Getter
     @Setter
-    private ArbolRojinegro padre;
+    private ArbolRojinegro father;
 
     @Getter
     @Setter
@@ -75,13 +75,14 @@ public class ArbolRojinegro {
         } else {
             padre.setDer(nuevoNodo);
         }
-        nuevoNodo.setPadre(padre);
+        nuevoNodo.setFather(padre);
 
         ArreglarArbolDespuesDeInsercion(nuevoNodo);
+        correcionRaiz();
     }
 
     private void ArreglarArbolDespuesDeInsercion(ArbolRojinegro nodo) throws Exception {
-        ArbolRojinegro padre = nodo.getPadre();
+        ArbolRojinegro padre = nodo.getFather();
 
         // Caso 1: El padre es nulo, estamos en la raiz
         if (padre == null) {
@@ -96,7 +97,7 @@ public class ArbolRojinegro {
         }
 
         // Casos cuando el padre es rojo
-        ArbolRojinegro abuelo = padre.getPadre();
+        ArbolRojinegro abuelo = padre.getFather();
 
         ArbolRojinegro tio = getTio(padre);
 
@@ -155,7 +156,7 @@ public class ArbolRojinegro {
     }
 
     private ArbolRojinegro getTio(ArbolRojinegro nodoPadre) throws Exception {
-        ArbolRojinegro abuelo = nodoPadre.getPadre();
+        ArbolRojinegro abuelo = nodoPadre.getFather();
         if (abuelo.getIzq() == nodoPadre) {
             return abuelo.getDer();
         } else if (abuelo.getDer() == nodoPadre) {
@@ -190,7 +191,7 @@ public class ArbolRojinegro {
     }
 
     public ArbolRojinegro search(int x) throws Exception {
-        ArbolRojinegro iterador = this.raiz;
+        ArbolRojinegro iterador = this;
         while (iterador != null) {
             if (iterador.getValor() == x) {
                 return iterador;
@@ -212,37 +213,50 @@ public class ArbolRojinegro {
     }
 
     public void rotacionIzquierda(int x) throws Exception {
+        // PRUEBA CON BFS ESTA INCORRECTA
         ArbolRojinegro node = search(x);
-        ArbolRojinegro parent = node.padre;
-        ArbolRojinegro rightChild = node.der;
+        ArbolRojinegro parent = node.getFather();
+        ArbolRojinegro rightChild = node.getDer();
 
         node.der = rightChild.izq;
         if (rightChild.izq != null) {
-            rightChild.izq.padre = node;
+            rightChild.izq.setFather(node);
         }
 
         rightChild.izq = node;
-        node.padre = rightChild;
+        node.setFather(rightChild);
 
         replaceParentsChild(parent, node, rightChild);
-
+        correcionRaiz();
     }
 
     public void rotacionDerecha(int x) throws Exception {
-        ArbolRojinegro node = search(x);
-        ArbolRojinegro parent = node.padre;
-        ArbolRojinegro leftChild = node.izq;
+        ArbolRojinegro node = this.search(x);
+        ArbolRojinegro parent = node.getFather();
+        ArbolRojinegro leftChild = node.getIzq();
 
         node.izq = leftChild.der;
         if (leftChild.der != null) {
-            leftChild.der.padre = node;
+            leftChild.der.setFather(node);
         }
 
-        leftChild.der = node;
-        node.padre = leftChild;
+        leftChild.setDer(node);
+        node.setFather(leftChild);
 
         replaceParentsChild(parent, node, leftChild);
+        correcionRaiz();
+    }
 
+    public void correcionRaiz() {
+        if (this.raiz != null) {
+            this.setDer(this.raiz.getDer());
+            this.setIzq(this.raiz.getIzq());
+            this.setBlack(this.raiz.isBlack());
+            this.setFather(this.raiz.getFather());
+            this.setValor(this.raiz.getValor());
+            // AL EJECUTAR ESTE METODO PARA CORREGIR LA RAIZ, SE CAMBIAN LOS VALORES DEL
+            // HIJO DERECHO POR SI MISMO, SE GENERA BUCLE INFINITO EN RIGTH
+        }
     }
 
     private void replaceParentsChild(ArbolRojinegro parent, ArbolRojinegro oldChild, ArbolRojinegro newChild) {
@@ -257,7 +271,7 @@ public class ArbolRojinegro {
         }
 
         if (newChild != null) {
-            newChild.padre = parent;
+            newChild.setFather(parent);
         }
     }
 
@@ -272,7 +286,7 @@ public class ArbolRojinegro {
         String salida = "";
         String separador = "";
         Queue<ArbolRojinegro> cola = new LinkedList<>();
-        cola.add(this.raiz);
+        cola.add(this);
         while (cola.size() > 0) {
             ArbolRojinegro nodo = cola.poll();
             salida += separador + String.valueOf(nodo.getValor());

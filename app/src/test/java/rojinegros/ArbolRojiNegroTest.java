@@ -43,9 +43,9 @@ class ArbolRojiNegroTest {
         for (int i = 0; i < num.length; i++) {
             instancia.insertar(num[i]);
         }
-        // Debería ser 10 7 12 6 8 11 14 9 13 15
+
         assertEquals(instancia.bfs(), "10 7 12 6 8 11 14 9 13 15");
-        assertEquals(instancia.inorden(), "6 7 8 9 10 11 12 13 14 15");
+        assertEquals(instancia.getRaiz().inorden(), "6 7 8 9 10 11 12 13 14 15");
 
         int numB[] = { 20, 22, 1, 2, 3, 9, 14, 17, 0, 33, 7, 13, 19 };
         ArbolRojinegro instanciaB = new ArbolRojinegro();
@@ -54,7 +54,7 @@ class ArbolRojiNegroTest {
             instanciaB.insertar(numB[i]);
         }
         assertEquals(instanciaB.bfs(), "9 2 20 1 3 14 22 0 7 13 17 33 19");
-        assertEquals(instanciaB.inorden(), "0 1 2 3 7 9 13 14 17 19 20 22 33");
+        assertEquals(instanciaB.getRaiz().inorden(), "0 1 2 3 7 9 13 14 17 19 20 22 33");
     }
 
     @Test
@@ -96,13 +96,15 @@ class ArbolRojiNegroTest {
         arb1.rotacionIzquierda(4);
 
         // Assert
-        assertEquals(arb1.bfs(), "4 2 5 1 3");
+        // DEBERIA SER 2 1 5 4 3
+        assertEquals(arb1.bfs(), "2 1 5 4 3");
 
         // Execute
         arb2.rotacionIzquierda(8);
 
         // Assert
-        assertEquals(arb2.bfs(), "8 5 9 1 6");
+        // DEBERIA SER 5 1 9 8 6
+        assertEquals(arb2.bfs(), "5 1 9 8 6");
 
     }
 
