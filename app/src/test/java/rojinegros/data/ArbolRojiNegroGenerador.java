@@ -115,7 +115,7 @@ public class ArbolRojiNegroGenerador {
 
                 nodoIzq.setFather(raiz);
                 nodoDer.setFather(raiz);
-                nodoIzqDer.setFather(nodoDer);
+                nodoIzqDer.setFather(nodoIzq);
                 nodoIzqIzq.setFather(nodoIzq);
                 return raiz;
         }
@@ -153,7 +153,7 @@ public class ArbolRojiNegroGenerador {
 
                 nodoIzq.setFather(raiz);
                 nodoDer.setFather(raiz);
-                nodoIzqDer.setFather(nodoDer);
+                nodoIzqDer.setFather(nodoIzq);
                 nodoIzqIzq.setFather(nodoIzq);
                 return raiz;
         }
