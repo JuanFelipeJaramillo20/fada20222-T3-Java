@@ -231,6 +231,7 @@ public class ArbolRojinegro {
     }
 
     public void rotacionDerecha(int x) throws Exception {
+
         ArbolRojinegro node = this.search(x);
         ArbolRojinegro parent = node.getFather();
         ArbolRojinegro leftChild = node.getIzq();
